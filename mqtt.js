@@ -3,6 +3,30 @@
 //const client = new Paho.MQTT.Client(mqttParam, 9001, "/mqtt", "myClientId" + timeID);
 window.mqttClient = new Paho.MQTT.Client(globals.mqttParam, "myClientId" + globals.timeID);
 
+const extractVideo = entityEl => {
+  const mesh = entityEl.getObject3D("mesh");
+  if (!mesh) {
+    return null;
+  }
+
+  const material = mesh.material;
+  if (!material) {
+    return null;
+  }
+
+  const map = material.map;
+  if (!map) {
+    return null;
+  }
+
+  const image = map.image;
+  if (!image || !(image instanceof HTMLVideoElement)) {
+    return null;
+  }
+
+  return image;
+};
+
 // loads scene objects from specified persistence URL if specified,
 // or globals.persistenceUrl if not
 const loadArena = (urlToLoad, position, rotation) => {
@@ -506,12 +530,15 @@ function onMessageArrived(message, jsonMessage) {
             let entityEl;
 
             // Reduce, reuse, recycle!
+            let isNewObject;
             if (name in sceneObjects) {
+                isNewObject = false;
                 entityEl = sceneObjects[name];
                 entityEl.setAttribute('visible', true); // might have been set invisible with 'off' earlier
                 //console.log("existing object: ", name);
                 //console.log(entityEl);
             } else { // CREATE NEW SCENE OBJECT
+                isNewObject = true;
                 entityEl = document.createElement('a-entity');
                 if (type === "viveLeft" || type === "viveRight") {
                     // create vive controller for 'other persons controller'
@@ -647,6 +674,7 @@ function onMessageArrived(message, jsonMessage) {
                 entityEl.setAttribute('text', 'side', "double");
                 entityEl.setAttribute('text', 'align', "center");
                 entityEl.setAttribute('text', 'anchor', "center");
+                entityEl.setAttribute('scale', xscale + ' ' + yscale + ' ' + zscale);
                 break;
 
             default:
@@ -667,6 +695,13 @@ function onMessageArrived(message, jsonMessage) {
             for (const [attribute, value] of Object.entries(theMessage.data)) {
                 //console.log("setting attr", attribute);
                 entityEl.setAttribute(attribute, value);
+            }
+
+            if (isNewObject) {
+                const video = extractVideo(entityEl);
+                if (video) {
+                    video.pause();
+                }
             }
 
             break;
@@ -739,9 +774,9 @@ function onMessageArrived(message, jsonMessage) {
                 case "video": {
                     let entityEl = sceneObjects[theMessage.object_id];
                     if (entityEl) {
-                        let video = entityEl.getObject3D("mesh").material.map.image;
-                        if (video && video instanceof HTMLVideoElement) {
-                            console.log(theMessage.data);
+                        const video = extractVideo(entityEl);
+                        if (video) {
+                            let videoWasPlaying = !video.paused && !video.ended;
                             for (const [attribute, value] of Object.entries(theMessage.data)) {
                                 switch (attribute) {
                                     case "state": {
@@ -762,7 +797,7 @@ function onMessageArrived(message, jsonMessage) {
                                         break;
                                     }
                                     case "position": {
-                                        if (Math.abs(video.currentTime - value) > 0.3) {
+                                        if (!videoWasPlaying || Math.abs(video.currentTime - value) > 0.5) {
                                             video.currentTime = value;
                                         }
                                         break;
