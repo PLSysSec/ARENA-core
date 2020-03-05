@@ -20,50 +20,50 @@ const loadArena = (urlToLoad, position, rotation) => {
             let arenaObjects = xhr.response;
             let l = arenaObjects.length;
             for (let i = 0; i < l; i++) {
-		let obj = arenaObjects[i];
+                let obj = arenaObjects[i];
                 if (obj.object_id === globals.camName) {
                     continue; // don't load our own camera/head assembly
                 }
-		if (obj.attributes.parent)
-		    deferredObjects.push(obj);
-		else {
+                if (obj.attributes.parent)
+                    deferredObjects.push(obj);
+                else {
                     let msg = {
-			object_id: obj.object_id,
-			action: 'create',
-			data: obj.attributes
+                        object_id: obj.object_id,
+                        action: 'create',
+                        data: obj.attributes
                     };
-		    if (position) {
-			msg.data.position.x = msg.data.position.x + position.x;
-			msg.data.position.y = msg.data.position.y + position.y;
-			msg.data.position.z = msg.data.position.z + position.z;
-		    }
-		    if (rotation) {
-			var r = new THREE.Quaternion(msg.data.rotation.x, msg.data.rotation.y, msg.data.rotation.z, msg.data.rotation.w);
-			var q = new THREE.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-			r.multiply(q);
-			msg.data.rotation.x = r.x;
-			msg.data.rotation.y = r.y;
-			msg.data.rotation.z = r.z;
-			msg.data.rotation.w = r.w;
-		    }
+                    if (position) {
+                        msg.data.position.x = msg.data.position.x + position.x;
+                        msg.data.position.y = msg.data.position.y + position.y;
+                        msg.data.position.z = msg.data.position.z + position.z;
+                    }
+                    if (rotation) {
+                        var r = new THREE.Quaternion(msg.data.rotation.x, msg.data.rotation.y, msg.data.rotation.z, msg.data.rotation.w);
+                        var q = new THREE.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+                        r.multiply(q);
+                        msg.data.rotation.x = r.x;
+                        msg.data.rotation.y = r.y;
+                        msg.data.rotation.z = r.z;
+                        msg.data.rotation.w = r.w;
+                    }
 
                     onMessageArrived(undefined, msg);
-		}
-	    }
-	    let l2 = deferredObjects.length;
-	    for (let i = 0; i < l2; i++) {
-		let obj = deferredObjects[i];
+                }
+            }
+            let l2 = deferredObjects.length;
+            for (let i = 0; i < l2; i++) {
+                let obj = deferredObjects[i];
                 if (obj.attributes.parent === globals.camName) {
                     continue; // don't load our own camera/head assembly
                 }
                 let msg = {
-		    object_id: obj.object_id,
-		    action: 'create',
-		    data: obj.attributes
+                    object_id: obj.object_id,
+                    action: 'create',
+                    data: obj.attributes
                 };
-		console.log("adding deferred object " + obj.object_id + " to parent " + obj.attributes.parent);
+                console.log("adding deferred object " + obj.object_id + " to parent " + obj.attributes.parent);
                 onMessageArrived(undefined, msg);
-	    }
+            }
         }
     };
 };
@@ -85,18 +85,18 @@ const unloadArena = (urlToLoad) => {
             let arenaObjects = xhr.response;
             let l = arenaObjects.length;
             for (let i = 0; i < l; i++) {
-		let obj = arenaObjects[i];
+                let obj = arenaObjects[i];
                 if (obj.object_id === globals.camName) {
                     continue; // don't load our own camera/head assembly
                 }
-		else {
+                else {
                     let msg = {
-			object_id: obj.object_id,
-			action: 'delete',
+                        object_id: obj.object_id,
+                        action: 'delete',
                     };
                     onMessageArrived(undefined, msg);
-		}
-	    }
+                }
+            }
         }
     };
 };
@@ -153,10 +153,10 @@ function onConnect() {
         sceneObjects.env.setAttribute('environment', 'preset', globals.themeParam);
     }
     if (globals.weatherParam !== "none") {
-	if (sceneObjects.weather) {
+        if (sceneObjects.weather) {
             sceneObjects.weather.setAttribute('particle-system', 'preset', globals.weatherParam);
             sceneObjects.weather.setAttribute('particle-system', 'enabled', 'true');
-	}
+        }
     } else if (sceneObjects.weather) {
         sceneObjects.weather.setAttribute('particle-system', 'enabled', 'false');
     }
@@ -167,14 +167,14 @@ function onConnect() {
         object_id: globals.camName,
         action: 'create',
         persist: true,
-	ttl: 3000,
+        ttl: 3000,
         data: {
             object_type: 'camera',
             position: {x: 0, y: 1.6, z: 0},
             rotation: {x: 0, y: 0, z: 0, w: 0},
             color: color
         },
-//	user_agent: navigator.userAgent
+//      user_agent: navigator.userAgent
     };
     console.log (navigator.userAgent);
 
@@ -186,29 +186,29 @@ function onConnect() {
     sceneObjects.myCamera.addEventListener('vioChanged', e => {
         //console.log(e.detail);
 
-        if (globals.fixedCamera !== '') {	
+        if (globals.fixedCamera !== '') {       
             let msg = {
-		object_id: globals.camName,
-		action: 'create',
-		type: 'object',
-		data: {
+                object_id: globals.camName,
+                action: 'create',
+                type: 'object',
+                data: {
                     object_type: 'camera',
                     position: {
-			x: parseFloat(e.detail.x.toFixed(3)),
-			y: parseFloat(e.detail.y.toFixed(3)),
-			z: parseFloat(e.detail.z.toFixed(3)),
+                        x: parseFloat(e.detail.x.toFixed(3)),
+                        y: parseFloat(e.detail.y.toFixed(3)),
+                        z: parseFloat(e.detail.z.toFixed(3)),
                     },
                     rotation: {
-			x: parseFloat(e.detail._x.toFixed(3)),
-			y: parseFloat(e.detail._y.toFixed(3)),
-			z: parseFloat(e.detail._z.toFixed(3)),
-			w: parseFloat(e.detail._w.toFixed(3)),
+                        x: parseFloat(e.detail._x.toFixed(3)),
+                        y: parseFloat(e.detail._y.toFixed(3)),
+                        z: parseFloat(e.detail._z.toFixed(3)),
+                        w: parseFloat(e.detail._w.toFixed(3)),
                     },
                     color: color,
-		}
+                }
             };
             publish(globals.vioTopic + globals.camName, msg); // extra timestamp info at end for debugging
-	}
+        }
     });
 
     sceneObjects.myCamera.addEventListener('poseChanged', e => {
@@ -297,9 +297,9 @@ function onConnect() {
                     color: color,
                 }
             };
-	    // e.g. realm/s/render/viveRight_9240_X or realm/s/render/viveRight_eric_eric
+            // e.g. realm/s/render/viveRight_9240_X or realm/s/render/viveRight_eric_eric
             publish(globals.outputTopic + globals.viveRName , msg);
-	});
+        });
     }
     // VERY IMPORTANT: remove retained camera topic so future visitors don't see it
     /*
@@ -336,11 +336,11 @@ const publish_retained = (dest, msg) => {
 window.publish = (dest, msg) => {
     if (typeof msg === 'object') {
 
-	// add timestamp to all published messages
-	var d = new Date();
-	var n = d.toISOString();
-	msg["timestamp"] = n;
-	    
+        // add timestamp to all published messages
+        var d = new Date();
+        var n = d.toISOString();
+        msg["timestamp"] = n;
+            
         msg = JSON.stringify(msg);
     }
     //console.log('desint :', dest, 'msggg', msg)
@@ -353,8 +353,8 @@ function isJson(str) {
     try {
         JSON.parse(str);
     } catch (e) {
-	console.log(str);
-	console.log(e.message);
+        console.log(str);
+        console.log(e.message);
         return false;
     }
     return true;
@@ -371,21 +371,21 @@ function onMessageArrived(message, jsonMessage) {
         theMessage = JSON.parse(message.payloadString);
     } else if (jsonMessage) {
         theMessage = jsonMessage;
-//	if (theMessage.data.object_type == "camera") // cull deadheads: ignore camera messages from DB
-//	    return;
+//      if (theMessage.data.object_type == "camera") // cull deadheads: ignore camera messages from DB
+//          return;
     }
 //    console.log(theMessage.object_id);
 
     switch (theMessage.action) { // clientEvent, create, delete, update
         case "clientEvent": {
             const entityEl = sceneObjects[theMessage.object_id];
-	    let myPoint = '';
-	    if (theMessage.data.position)
-		myPoint = new THREE.Vector3(parseFloat(theMessage.data.position.x),
-					    parseFloat(theMessage.data.position.y),
-					    parseFloat(theMessage.data.position.z));
-	    else
-		console.log("Error: theMessage.data.position not defined", theMessage);
+            let myPoint = '';
+            if (theMessage.data.position)
+                myPoint = new THREE.Vector3(parseFloat(theMessage.data.position.x),
+                                            parseFloat(theMessage.data.position.y),
+                                            parseFloat(theMessage.data.position.z));
+            else
+                console.log("Error: theMessage.data.position not defined", theMessage);
             const clicker = theMessage.data.source;
             switch (theMessage.type) {
                 case "collision":
@@ -436,25 +436,25 @@ function onMessageArrived(message, jsonMessage) {
         }
         case "create": {
             const name = theMessage.object_id;
-	    delete theMessage.object_id;
+            delete theMessage.object_id;
 
             if (name === globals.camName) {
                 return;
             }
-	    if (theMessage.data.parent) {
-		// Don't attach to our own camera
-		if (theMessage.data.parent == globals.camName)
-		    return;
-	    }
+            if (theMessage.data.parent) {
+                // Don't attach to our own camera
+                if (theMessage.data.parent == globals.camName)
+                    return;
+            }
 
             let x, y, z, xrot, yrot, zrot, wrot, xscale, yscale, zscale, color;
-	    // Strategy: remove JSON for core attributes (position, rotation, color, scale) after parsing
-	    // what remains are attribute-value pairs that can be set iteratively
+            // Strategy: remove JSON for core attributes (position, rotation, color, scale) after parsing
+            // what remains are attribute-value pairs that can be set iteratively
             if (theMessage.data.position) {
                 x = theMessage.data.position.x;
                 y = theMessage.data.position.y;
                 z = theMessage.data.position.z;
-		delete theMessage.data.position;
+                delete theMessage.data.position;
             } else { // useful defaults if unspecified
                 x = 0;
                 y = 0;
@@ -466,7 +466,7 @@ function onMessageArrived(message, jsonMessage) {
                 yrot = theMessage.data.rotation.y;
                 zrot = theMessage.data.rotation.z;
                 wrot = theMessage.data.rotation.w;
-		delete theMessage.data.rotation;
+                delete theMessage.data.rotation;
             } else { // useful defaults
                 xrot = 0;
                 yrot = 0;
@@ -478,7 +478,7 @@ function onMessageArrived(message, jsonMessage) {
                 xscale = theMessage.data.scale.x;
                 yscale = theMessage.data.scale.y;
                 zscale = theMessage.data.scale.z;
-		delete theMessage.data.scale;
+                delete theMessage.data.scale;
             } else { // useful defaults
                 xscale = 1;
                 yscale = 1;
@@ -487,13 +487,13 @@ function onMessageArrived(message, jsonMessage) {
 
             if (theMessage.data.color) {
                 color = theMessage.data.color;
-		delete theMessage.data.color;
+                delete theMessage.data.color;
             } else {
                 color = "white";
             }
 
             let type = theMessage.data.object_type;
-	    delete theMessage.data.object_type;
+            delete theMessage.data.object_type;
             if (type === "cube") {
                 type = "box";
             }
@@ -538,10 +538,10 @@ function onMessageArrived(message, jsonMessage) {
 
                     // this is the head 3d model
                     let headModelEl = document.createElement('a-entity');
-		    headModelEl.setAttribute('id', "head-model_"+name);
+                    headModelEl.setAttribute('id', "head-model_"+name);
                     headModelEl.setAttribute('rotation', '0 180 0');
                     headModelEl.object3D.scale.set(1, 1, 1);
-		    headModelEl.setAttribute('dynamic-body', "type", "static");
+                    headModelEl.setAttribute('dynamic-body', "type", "static");
 
                     headModelEl.setAttribute("gltf-model", "url(models/Head.gltf)");  // actually a face mesh
 
@@ -559,7 +559,7 @@ function onMessageArrived(message, jsonMessage) {
                     headtext.setAttribute('rotation', '0 180 0');
                     headtext.setAttribute('color', color); // color
                     headtext.setAttribute('width', 5); // try setting last
-		    
+                    
                     entityEl.appendChild(headtext);
                     entityEl.appendChild(headModelEl);
                     sceneObjects["head-text_"+name] = headtext;
@@ -570,25 +570,25 @@ function onMessageArrived(message, jsonMessage) {
 
                     //console.log("their camera:", entityEl);
                 } else {
-		    entityEl.setAttribute('id', name);
-		    entityEl.setAttribute('rotation.order', "YXZ");
+                    entityEl.setAttribute('id', name);
+                    entityEl.setAttribute('rotation.order', "YXZ");
 
-		    // Parent/Child handling
-		    if (theMessage.data.parent) {
-			var parentEl = sceneObjects[theMessage.data.parent];
-			if (parentEl)  {
-			    entityEl.flushToDOM();
-			    parentEl.appendChild(entityEl);
-			    // Add it to our dictionary of scene objects
-			    sceneObjects[name] = entityEl;
-			} else {
-			    console.log("orphaned; parent " + name + " cannot find " + theMessage.data.parent+ " yet");
-			}
-		    } else {
-			sceneObjects.scene.appendChild(entityEl);
-			// Add it to our dictionary of scene objects
-			sceneObjects[name] = entityEl;
-		    }
+                    // Parent/Child handling
+                    if (theMessage.data.parent) {
+                        var parentEl = sceneObjects[theMessage.data.parent];
+                        if (parentEl)  {
+                            entityEl.flushToDOM();
+                            parentEl.appendChild(entityEl);
+                            // Add it to our dictionary of scene objects
+                            sceneObjects[name] = entityEl;
+                        } else {
+                            console.log("orphaned; parent " + name + " cannot find " + theMessage.data.parent+ " yet");
+                        }
+                    } else {
+                        sceneObjects.scene.appendChild(entityEl);
+                        // Add it to our dictionary of scene objects
+                        sceneObjects[name] = entityEl;
+                    }
                 }
             }
 
@@ -624,7 +624,7 @@ function onMessageArrived(message, jsonMessage) {
             case "thickline":
                 entityEl.setAttribute('meshline', theMessage.data);
                 entityEl.setAttribute('meshline', 'color', color);
-		delete theMessage.data.thickline;
+                delete theMessage.data.thickline;
                 break;
 
             case "particle":
@@ -635,14 +635,14 @@ function onMessageArrived(message, jsonMessage) {
                 //entityEl.object3D.scale.set(xscale, yscale, zscale);
                 entityEl.setAttribute('scale', xscale + ' ' + yscale + ' ' + zscale);
                 entityEl.setAttribute("gltf-model", theMessage.data.url);
-		delete theMessage.data.url;
+                delete theMessage.data.url;
                 break;
 
             case "text":
                 // set a bunch of defaults
                 entityEl.setAttribute('text', 'width', 5); // the default for <a-text>
                 entityEl.setAttribute('text', 'value', theMessage.data.text);
-		delete theMessage.data.text;
+                delete theMessage.data.text;
                 entityEl.setAttribute('text', 'color', color);
                 entityEl.setAttribute('text', 'side', "double");
                 entityEl.setAttribute('text', 'align', "center");
@@ -660,14 +660,14 @@ function onMessageArrived(message, jsonMessage) {
             if (type !== 'line' && type !== 'thickline') {
                 // Common for all but lines: set position & rotation
                 entityEl.object3D.position.set(x, y, z);
-		entityEl.object3D.quaternion.set(xrot,yrot,zrot,wrot);
+                entityEl.object3D.quaternion.set(xrot,yrot,zrot,wrot);
             }
 
-	    // what remains are attributes for special cases; iteratively set them
+            // what remains are attributes for special cases; iteratively set them
             for (const [attribute, value] of Object.entries(theMessage.data)) {
-		//console.log("setting attr", attribute);
+                //console.log("setting attr", attribute);
                 entityEl.setAttribute(attribute, value);
-	    }
+            }
 
             break;
         }
@@ -678,28 +678,28 @@ function onMessageArrived(message, jsonMessage) {
                     if (name === globals.camName) { // our camera Rig
                         console.log("moving our camera rig, sceneObject: " + name);
 
-			// "I do declare!"
-			var x, y, z, xrot, yrot, zrot, wrot;
+                        // "I do declare!"
+                        var x, y, z, xrot, yrot, zrot, wrot;
 
-			if (theMessage.data.position) {
+                        if (theMessage.data.position) {
                             x = theMessage.data.position.x;
                             y = theMessage.data.position.y;
                             z = theMessage.data.position.z;
-			} else {
-			    x = 0; y = 0; z = 0;
-			}
-			if (theMessage.data.rotation) {
+                        } else {
+                            x = 0; y = 0; z = 0;
+                        }
+                        if (theMessage.data.rotation) {
                             xrot = theMessage.data.rotation.x;
                             yrot = theMessage.data.rotation.y;
                             zrot = theMessage.data.rotation.z;
                             wrot = theMessage.data.rotation.w;
-			} else {
-			    xrot = 0; yrot = 0; zrot = 0; wrot = 1;
-			}
+                        } else {
+                            xrot = 0; yrot = 0; zrot = 0; wrot = 1;
+                        }
 
                         sceneObjects.cameraRig.object3D.position.set(x, y, z);
-			sceneObjects.cameraSpinner.object3D.quaternion.set(xrot, yrot, zrot, wrot);
-			console.log(xrot, yrot, zrot, wrot);
+                        sceneObjects.cameraSpinner.object3D.quaternion.set(xrot, yrot, zrot, wrot);
+                        console.log(xrot, yrot, zrot, wrot);
                     }
                     break;
                 }
@@ -721,13 +721,60 @@ function onMessageArrived(message, jsonMessage) {
                     if (entityEl) {
                         for (const [attribute, value] of Object.entries(theMessage.data)) {
                             if (attribute === "rotation") {
-				entityEl.object3D.quaternion.set(value.x, value.y, value.z, value.w);
+                                entityEl.object3D.quaternion.set(value.x, value.y, value.z, value.w);
                             } else if (attribute === "position") {
                                 entityEl.object3D.position.set(value.x, value.y, value.z);
                             } else {
-				//console.log("setting attribute: ", attribute);
-                                entityEl.setAttribute(attribute, value);
+                                //console.log("setting attribute: ", attribute);
+                                if (entityEl.getAttribute(attribute) !== value) {
+                                    entityEl.setAttribute(attribute, value);
+                                }
                             }
+                        }
+                    } else {
+                        console.log("Warning: " + theMessage.object_id + " not in sceneObjects");
+                    }
+                    break;
+                }
+                case "video": {
+                    let entityEl = sceneObjects[theMessage.object_id];
+                    if (entityEl) {
+                        let video = entityEl.getObject3D("mesh").material.map.image;
+                        if (video && video instanceof HTMLVideoElement) {
+                            console.log(theMessage.data);
+                            for (const [attribute, value] of Object.entries(theMessage.data)) {
+                                switch (attribute) {
+                                    case "state": {
+                                        switch (value) {
+                                            case "playing": {
+                                                video.play();
+                                                break;
+                                            }
+                                            case "paused": {
+                                                video.pause();
+                                                break;
+                                            }
+                                            default: {
+                                                console.log("Warning: " + value + " not a recognized video state");
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                    case "position": {
+                                        if (Math.abs(video.currentTime - value) > 0.3) {
+                                            video.currentTime = value;
+                                        }
+                                        break;
+                                    }
+                                    default: {
+                                        console.log("Warning: " + attribute + " not a recognized video attribute");
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            console.log("Warning: " + theMessage.object_id + " does not have a video material");
                         }
                     } else {
                         console.log("Warning: " + theMessage.object_id + " not in sceneObjects");
